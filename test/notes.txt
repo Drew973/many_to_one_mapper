@@ -1,0 +1,40 @@
+
+join accidents (point geometry,direction) to layer with segment number. this layer also has buffers.
+buffer layer has unique segment number and unique combination of section label and direction.
+
+
+join on user selection (option for points within buffer?)
+
+
+
+output csv with segment number,section label,direction,number of accidents,list of accident refs
+(could use section label and direction)
+
+
+create new csv layer at start or load csv layer at start?
+qt csv model? doesn't seem to exist.
+
+or more conventional save and load?
+
+
+
+load results
+save results
+
+change section&direction
+display view of accidents.
+select accidents on layer.
+
+
+
+
+
+
+
+
+Something to:
+Select 1 segment at a time.
+Display accidents within the segment by showing a list of accident references. Has way to select the accidents on layer.
+Remove  accidents by selecting items of list.
+Add accidents by selecting features on layer.
+Output csv with segment_number,section_label,direction,accident_refs,number_of_accidents.
