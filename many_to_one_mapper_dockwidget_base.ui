@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>manyToOneMApperDockWidgetBase</class>
- <widget class="QDockWidget" name="manyToOneMApperDockWidgetBase">
+ <class>manyToOneMapperDockWidgetBase</class>
+ <widget class="QDockWidget" name="manyToOneMapperDockWidgetBase">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -28,42 +28,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QgsFieldComboBox" name="fieldBox1">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Target field to add to csv.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
+          <widget class="uniqueFieldBox" name="fieldBox1"/>
          </item>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QLineEdit" name="valueEdit">
+          <widget class="QgsMapLayerComboBox" name="layerBox2">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Target field for current feature of layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Join layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="goToButton">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select and zoom to feature of primary layer with this value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Go To</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="fromLayerButton">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set Value from selected feature of layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>From Layer</string>
-           </property>
-          </widget>
+          <widget class="uniqueFieldBox" name="fieldBox2"/>
          </item>
         </layout>
        </item>
@@ -80,7 +59,7 @@
           </widget>
          </item>
          <item>
-          <widget class="featuresWidget" name="featuresBox">
+          <widget class="featureWidget" name="featuresBox">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Current feature&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -93,6 +72,29 @@
            </property>
            <property name="text">
             <string>&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="fromLayerButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set Value from selected feature of layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>From Layer</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="zoomBox">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select features on layers and zoom to them when feature changed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Zoom on change</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -114,24 +116,6 @@
          </property>
         </widget>
        </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QgsMapLayerComboBox" name="layerBox2">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Join layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QgsFieldComboBox" name="fieldBox2">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Join field to add to csv.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
       </layout>
      </widget>
     </item>
@@ -140,19 +124,19 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QgsFieldComboBox</class>
-   <extends>QComboBox</extends>
-   <header>qgsfieldcombobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
    <header>qgsmaplayercombobox.h</header>
   </customwidget>
   <customwidget>
-   <class>featuresWidget</class>
+   <class>featureWidget</class>
    <extends>QComboBox</extends>
-   <header>.featuresWidget.featuresWidget</header>
+   <header>.widgets.featuresWidget</header>
+  </customwidget>
+  <customwidget>
+   <class>uniqueFieldBox</class>
+   <extends>QComboBox</extends>
+   <header>.widgets.filterableFieldBox</header>
   </customwidget>
  </customwidgets>
  <resources/>

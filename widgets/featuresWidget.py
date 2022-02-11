@@ -22,7 +22,11 @@ widget to map layer and field to features. For 1:1 mapping use a unique field
 '''
 
 
+
+
 class featuresWidget(searchableComboBox.searchableComboBox):
+
+
     
     def __init__(self,parent=None):
         super().__init__(parent)
@@ -31,18 +35,14 @@ class featuresWidget(searchableComboBox.searchableComboBox):
         self.field = None
     
     
-    #QgsVectorLayer
-    def setLayer(self,layer):
+    #string,QgsVectorLayer
+       
+    def setField(self,field,layer):
         self.layer = layer
-        #set list to unique values
-    
-    #string
-    def setField(self,field):
         self.field = field
-        vals = [str(v) for v in self.layer.uniqueValues(self.layer.fields().indexOf(field))]
-        #self.setValidator(listValidator(self,vals))
         self.clear()
-        self.addItems(vals)
+        if not self.layer is None:
+            self.addItems([str(v) for v in self.layer.uniqueValues(self.layer.fields().indexOf(field))])
     
     
     def next(self):
@@ -60,8 +60,8 @@ class featuresWidget(searchableComboBox.searchableComboBox):
         if self.layer and self.field:
             e = '%s=%s '%(double_quote(self.field),single_quote(self.currentValue()))
             request = QgsFeatureRequest().setFilterExpression(e)
-            return self.layer.getFeatures(request)
-        
+            return [f for f in self.layer.getFeatures(request)]
+        return []
 
 
     def fromLayer(self):
@@ -100,7 +100,18 @@ def zoomToSelected(layer):
     iface.actionZoomToSelected().trigger()
     iface.setActiveLayer(a)
     
-    
+
+
+
+
+class featureWidget(featuresWidget):
+
+    def feature(self):
+        f = self.currentFeatures()
+        if len(f)==1:
+            return f[0]
+
+            
     
             
 if __name__=='__console__':
