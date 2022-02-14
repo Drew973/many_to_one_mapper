@@ -1,4 +1,4 @@
-from qgis.gui import QgsFieldComboBox
+from qgis.gui import QgsFieldComboBox,QgsMapLayerComboBox
 from qgis.core import QgsFields
 
 '''
@@ -15,6 +15,10 @@ class layerBox(QgsFieldComboBox):
         self.filterFunction = None
         self.cl = None
 
+        if isinstance(parent,QgsMapLayerComboBox):
+            parent.layerChanged.connect(self.setLayer)
+            self.setLayer(parent.currentLayer())
+        
     
     def setLayer(self,layer):        
         super().setLayer(layer)#fieldChanged emmited here?
@@ -31,6 +35,7 @@ class layerBox(QgsFieldComboBox):
 
     def setFilterFunction(self,function):
         self.filterFunction = function
+        self.setLayer(self.currentLayer())
 
 
     def currentField(self):

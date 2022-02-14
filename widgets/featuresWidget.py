@@ -13,6 +13,7 @@ from . import searchableComboBox
 
 from qgis.core import QgsFeatureRequest
 from qgis.utils import iface
+#from PyQt5.QtCore import pyqtSignal
 
 
 
@@ -25,8 +26,8 @@ widget to map layer and field to features. For 1:1 mapping use a unique field
 
 
 class featuresWidget(searchableComboBox.searchableComboBox):
-
-
+#
+  #  featuresChanged = pyqtSignal()
     
     def __init__(self,parent=None):
         super().__init__(parent)

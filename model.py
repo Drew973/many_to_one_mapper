@@ -97,8 +97,10 @@ class model:
             self.data.pop(key)
 
 
-    def writeCSV(self,file,layer1,field1,layer2,field2):        
-        
+    def writeCSV(self,file,layer1,field1,layer2,field2):
+
+        print(file,layer1,field1,layer2,field2)
+        print(self.data)
         with open(file, 'w') as to:
             to.write('{field1},{field2},Count\n'.format(field1=field1,field2=field2))
             
@@ -121,6 +123,8 @@ class model:
             if not field2 in reader.fieldnames:
                 raise keyError('file {file} has no field named {f}'.format(file=file,f=field2))
 
+
+            self.data = {} # clear existing data
             
             for row in reader:
                 f = layerFunctions.getFeature(layer1,field1,row[field1])
@@ -130,7 +134,6 @@ class model:
                 self.addFeatures(k,[layerFunctions.getFeature(layer2,field2,a) for a in atts2])
                 
                    
-        print(self.data)        
         
 
 
@@ -183,8 +186,10 @@ class model:
 #creates key from feature and layer.
 #using feature directly as key does not work properly. feature != feature ?
 def key(feature,layer,layer2):
-    if not (feature is None or layer is None):
-        return tuple(feature.attributes()+[layer.id(),layer2.id()])
+    if not (feature is None or layer is None or layer2 is None):
+        #return tuple(feature.attributes()+[layer.id(),layer2.id()])
+        return tuple([feature.id(),layer.id(),layer2.id()])
+    #raise ValueError('key({feature},{layer1},{layer2})'.format(feature=feature,layer1=layer,layer2=layer2))
 
 
 def keyContainsLayer1(key,layer1):

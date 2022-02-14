@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>658</width>
-    <height>655</height>
+    <width>973</width>
+    <height>815</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,35 +19,7 @@
      <widget class="QWidget" name="mainWidget" native="true">
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QgsMapLayerComboBox" name="layerBox1">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Layer. Many features of join layer are mapped to each feature of this layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="uniqueFieldBox" name="fieldBox1"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QgsMapLayerComboBox" name="layerBox2">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Join layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="uniqueFieldBox" name="fieldBox2"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QPushButton" name="lastButton">
            <property name="toolTip">
@@ -124,19 +96,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QgsMapLayerComboBox</class>
-   <extends>QComboBox</extends>
-   <header>qgsmaplayercombobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>featureWidget</class>
    <extends>QComboBox</extends>
    <header>.widgets.featuresWidget</header>
-  </customwidget>
-  <customwidget>
-   <class>uniqueFieldBox</class>
-   <extends>QComboBox</extends>
-   <header>.widgets.filterableFieldBox</header>
   </customwidget>
  </customwidgets>
  <resources/>

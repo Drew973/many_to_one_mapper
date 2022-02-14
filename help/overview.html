@@ -10,69 +10,63 @@
 
 
 <body>
-        <h3 id="home">Many to One Mapper</h3>
+        <h3 id="home">Accident Mapper</h3>
 
-        <p>Tool for mapping many features of join layer to each feature of layer.<p>
-		<p>Can save and load csv. <p>
+        <p>Tool for mapping features of layer to features of another layer.</p>
+		<p>Displays links (to features of "layer 2") for one feature of "layer 1" at a time. </p>
+		<p>Can save and load csv. </p>
 
 
 		<h4> Setting layers and fields</h4>
-			<p>select the layer and field to use</p>
-			<p>select the layer to join to and field to add to csv</p>
+			<p>Before using the following will need specifying Layers:set layers.</p>
+			<p>Layer 1, and field to display/add to csv</p>
+			<p>Layer 2, and field to display/add to csv</p>
+			<p>Layer 3 and Field:optional: Only effect is to select features of layer 3 on map where field = displayed value when feature is selected in tool.</p>
+
 
 
 		<h4> Selecting a feature</h4>
-			<p>select a feature by:</p>
+			<p>Features to edit links for can be selected through: </p>
 			<ul>
-			<li>selecting a feature on the layer and clicking 'From Layer'</li>
-			<li>entering a value into the box.</li>
+			<li>The drop down and arrows.</li>
+			<li>Selecting a feature on the layer and clicking 'From Layer'</li>
 			</ul>
 
 
-		<h4> Mapping features of join layer to the selected feature</h4>
-			<p>Right clicking the table gives options for editing which features of the join layer are mapped to the current feature.</p>
+		<h4> Adding features:</h4>
+			<p>Features can be added through:</p>
 			<ul>
-			<li>Map selected features of the join layer to the current feature with 'Add selected features':</li>
-			<li>Add features within the geometry of the current feature through 'add features within geometry':</li>
-			<li>Remove features through 'drop selected rows':</li>
-			<li>Use 'select on layer' to zoom map to location of selected rows:</li>
+			<li>"Edit:add selected features":</li>
+			<li>Edit:"add features within geometry" adds any features of layer 2 contained within the geometry of layer 1.</li>
+			<li>"Edit:add features within geometry to all": does this for every feature of layer 1</li>
 			</ul>
-
-
-		<h4>Tools:</h4>
-			<ul>
-			<li>Add features within geometry to all: does 'add features within geometry' for all features of layer.</li>
-			</ul>
-
-
-		<h4>The csv:</h4>
-    	
-		<p>The purpose of the csv is to map features of the layer to features of the join layer through the join field and target field.</p>
-		<p>In order to do this these values must correspond to exactly one feature.</p>
-
-
-		<p>The csv will have a header and 1 row for each feature of the layer which has features of the join layer mapped to it. </p>
 		
-		<p>csv has 3 columns<p>
+		
+		<h4> Removing Features:</h4>
+			<p>Features can be removed through.</p>
+			<ul>
+			<li>Right clicking on table and "drop selected rows".</li>
+			<li>Edit:clear:</li>
+			</ul>
+
+
+		<h4>Saving csv:</h4>
+		<p>Save as csv through File:save as csv...</p>
+
+		<p>The resulting csv will have a header and 1 row per feature of layer 1 (with features of layer 2 mapped to it). </p>
+		<p>It will have 3 columns:<p>
 
 		<ul>
-		<li>1st column: target field  of primary layer. Same name as field.</li>
-		<li>2nd column: list of join field for mapped features of join layer. Same name as field.</li>
-		<li>3rd column:named Count. Number of features in 2nd column.</li>
+		<li>1st column: Field of layer 1. Same name as field.</li>
+		<li>2nd column: list of join field for mapped features of Layer 2. Same name as field.</li>
+		<li>3rd column: Number of features in 2nd column. Named "Count". </li>
 		</ul>
-
-
-
-	<h4>Saving csv:</h4>
-		<p>After selecting fields save as csv through File-->save as csv...</p>
-		<p>The plugin will check that each value corresponds to 1 feature when saving.</p>
 
 
 
 	<h4>Loading csv:</h4>
 		<p>Load a csv through File-->load csv...</p>
-		<p>The csv will need to have a column with the same name as the target field and a column with the same name as the join field.</p>
-		<p>Rows with errors will be skipped and produce a warning.</p>
+		<p>The csv will need to have a column with the same name as field 1 and a column with the same name as field 2.</p>
 
 </body>
 

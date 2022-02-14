@@ -1,4 +1,12 @@
 from qgis.core import QgsFeatureRequest
+from qgis.utils import iface
+
+
+
+def getFeatures(layer,field,value):
+    e = '%s=%s '%(doubleQuote(field),singleQuote(value))
+    request = QgsFeatureRequest().setFilterExpression(e)
+    return [f for f in layer.getFeatures(request)]
 
 
 def getFeature(layer,field,value):
@@ -25,6 +33,12 @@ def singleQuote(s):
 def doubleQuote(s):
     return '"%s"'%(s)
 
+
+def zoomToSelected(layer):
+    a = iface.activeLayer()
+    iface.setActiveLayer(layer)
+    iface.actionZoomToSelected().trigger()
+    iface.setActiveLayer(a)
 
 
 #gets features of layer contained by geom
