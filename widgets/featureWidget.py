@@ -35,7 +35,12 @@ class featureWidget(searchableComboBox.searchableComboBox):
     #string,QgsVectorLayer
        
     def setField(self,field,layer):
-        if not layer is None:
+        self.layer = layer
+    
+        if layer is None:
+            self.clear()
+        
+        else:
             filt = layer.subsetString()
             layer.setSubsetString('')#remove filter.
 
@@ -57,7 +62,7 @@ class featureWidget(searchableComboBox.searchableComboBox):
             layer.setSubsetString(filt)#add filter.
 
 
-            self.layer = layer
+            
 
     
     def next(self):
@@ -95,8 +100,9 @@ class featureWidget(searchableComboBox.searchableComboBox):
         
         
     def currentFid(self):
-        i = self.model().index(self.currentIndex(),0)
-        return self.model().mapToSource(i).row()
+        if not self.layer is None:
+            i = self.model().index(self.currentIndex(),0)
+            return self.model().mapToSource(i).row()
 
 
 def singleQuote(s):
