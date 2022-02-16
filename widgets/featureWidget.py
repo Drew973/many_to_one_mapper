@@ -1,4 +1,3 @@
-#can find or select features matching current value.
 if __name__=='__console__':
     import sys
     p = r'C:\Users\drew.bennett\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\manytoonemapper\widgets'
@@ -36,23 +35,29 @@ class featureWidget(searchableComboBox.searchableComboBox):
     #string,QgsVectorLayer
        
     def setField(self,field,layer):
-        
-        filt = layer.subsetString()
-        layer.setSubsetString('')#remove filter.
-        
-        self.layerModel = QStandardItemModel(layer.featureCount(),1,self)#row = fid
-        for f in layer.getFeatures():
-            self.layerModel.setData(self.layerModel.index(f.id(),0),f[field])
-   
-       # self.setModel(model)
-        m = QSortFilterProxyModel(self)
-        m.setSourceModel(self.layerModel)
-        m.sort(0)
-        self.setModel(m)
-        layer.setSubsetString(filt)#add filter.
-        
-        
-        self.layer = layer
+        if not layer is None:
+            filt = layer.subsetString()
+            layer.setSubsetString('')#remove filter.
+
+            self.layerModel = QStandardItemModel(layer.featureCount(),1,self)#row = fid
+            
+            if field is None:
+                for f in layer.getFeatures():
+                  self.layerModel.setData(self.layerModel.index(f.id(),0),f.id())
+            
+            else:
+                for f in layer.getFeatures():
+                    self.layerModel.setData(self.layerModel.index(f.id(),0),f[field])
+
+           # self.setModel(model)
+            m = QSortFilterProxyModel(self)
+            m.setSourceModel(self.layerModel)
+            m.sort(0)
+            self.setModel(m)
+            layer.setSubsetString(filt)#add filter.
+
+
+            self.layer = layer
 
     
     def next(self):
