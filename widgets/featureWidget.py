@@ -46,14 +46,14 @@ class featureWidget(searchableComboBox.searchableComboBox):
 
             self.layerModel = QStandardItemModel(layer.featureCount(),1,self)#row = fid
             
-            if field is None:
+            if layer.fields().indexOf(field)!=-1:           #currentField='' when QGSFIeldComboBox layer not set?
                 for f in layer.getFeatures():
-                  self.layerModel.setData(self.layerModel.index(f.id(),0),f.id())
+                    self.layerModel.setData(self.layerModel.index(f.id(),0),f[field])
             
             else:
                 for f in layer.getFeatures():
-                    self.layerModel.setData(self.layerModel.index(f.id(),0),f[field])
-
+                    self.layerModel.setData(self.layerModel.index(f.id(),0),f.id())
+                  
            # self.setModel(model)
             m = QSortFilterProxyModel(self)
             m.setSourceModel(self.layerModel)
