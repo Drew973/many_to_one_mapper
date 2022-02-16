@@ -104,42 +104,53 @@ class model:
 
     def writeCSV(self,file,layer1,field1,layer2,field2):
 
-        print(file,layer1,field1,layer2,field2)
-        print(self.data)
+ 
         with open(file, 'w') as to:
             to.write('{field1},{field2},Count\n'.format(field1=field1,field2=field2))
             
+            filt = layer1.subsetString()
+            layer1.setSubsetString('')
+            
             for feat in layer1.getFeatures():
-                k = key(feat,layer1,layer2)
+                k = key(feat.id(),layer1,layer2)
                 if k in self.data:
                     atts2 = [f[field2] for f in self.data[k]]
                     to.write('{att1},"{atts2}",{count}\n'.format(att1=feat[field1],atts2=str(atts2),count=len(atts2)))
                    
-
+            layer1.setSubsetString(filt)
 
     def readCSV(self,file,layer1,field1,layer2,field2):
         with open(file, 'r') as to:
+        
             reader = csv.DictReader(to)
             
             #check fields
             if not field1 in reader.fieldnames:
-                raise keyError('file {file} has no field named {f}'.format(file=file,f=field1))
+                raise KeyError('file {file} has no field named {f}'.format(file=file,f=field1))
 
             if not field2 in reader.fieldnames:
-                raise keyError('file {file} has no field named {f}'.format(file=file,f=field2))
+                raise KeyError('file {file} has no field named {f}'.format(file=file,f=field2))
+
+
+            filt1 = layer1.subsetString()
+            layer1.setSubsetString('')
+            
+            filt2 = layer1.subsetString()
+            layer2.setSubsetString('')
 
 
             self.data = {} # clear existing data
             
             for row in reader:
                 f = layerFunctions.getFeature(layer1,field1,row[field1])
-                k = key(f,layer1,layer2)
+                k = key(f.id(),layer1,layer2)
                 atts2 = ast.literal_eval(row[field2])
 
                 self.addFeatures(k,[layerFunctions.getFeature(layer2,field2,a) for a in atts2])
                 
                    
-        
+            layer1.setSubsetString(filt1)
+            layer2.setSubsetString(filt2)
 
 
 
@@ -195,7 +206,7 @@ def key(fid,layer,layer2):
 
 
 def keyContainsLayer1(key,layer1):
-    return key[-1]==layer1.id()
+    return key[1]==layer1.id()
 
 
 def keyContainsLayer2(key,layer2):

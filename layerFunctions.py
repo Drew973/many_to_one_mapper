@@ -16,10 +16,10 @@ def getFeature(layer,field,value):
     r = [f for f in layer.getFeatures(request)]
     
     if len(r)==0:
-        raise keyError('No feature with {field} ={value}'.format(field,value))
+        raise KeyError('No feature with {field} ={value}'.format(field=field,value=value))
 
     if len(r)>1:
-        raise keyError('Multiple features with {field} ={value}'.format(field=field,value=value))
+        raise KeyError('Multiple features with {field} ={value}'.format(field=field,value=value))
 
     return r[0]
 
