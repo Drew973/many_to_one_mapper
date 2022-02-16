@@ -31,10 +31,15 @@ shapefile ids can change.
 map features rather than values to avoid problems when layer changed or fields changed
 
 
-{feature1:[feature2]}?
-
-
 combination of feature1,layer1,layer2 as key.
+
+other approach would be
+model based on QgsVectorLayer?
+fid as row number
+column number as field Index.
+sort through qsortfilterproxymodel.
+each row guarenteed to correspond to 1 feature
+
 
 '''
 from PyQt5 import QtGui
@@ -153,19 +158,6 @@ class model:
 
     def header(self,field):
         return ['fid',field]
-
- 
-#add all accidents within or intersecting geometry of section
-#feat is feature for section
-    def addWithinGeom(self,feat1,layer1,layer2):
-        k = key(feat1,layer1,layer2)
-        self.addFeatures(k,layerFunctions.containedFeatures(feat1.geometry(),layer2))
-
-
-    def addWithinGeomAll(self,layer1,layer2):
-        for f in layer1.getFeatures():
-            self.addWithinGeom(f,layer1,layer2)
-        
 
 
         

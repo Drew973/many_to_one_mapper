@@ -1,13 +1,12 @@
-
-#makes list from unique values of layer.field
 #can find or select features matching current value.
 if __name__=='__console__':
     import sys
-    p = r'C:\Users\drew.bennett\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\manytoonemapper\featuresWidget'
+    p = r'C:\Users\drew.bennett\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\manytoonemapper\widgets'
     sys.path.append(p)
+    import searchableComboBox
     
-    
-from . import searchableComboBox
+else:
+    from . import searchableComboBox
 
 
 
@@ -15,30 +14,13 @@ from qgis.core import QgsFeatureRequest
 from qgis.utils import iface
 #from PyQt5.QtCore import pyqtSignal
 
-
-
-
+from PyQt5.QtCore import QSortFilterProxyModel
 '''
-widget to map layer and field to features. For 1:1 mapping use a unique field 
-
-
-
-other approach would be:
-model based on QgsVectorLayer?
-fid as row number
-column number as field Index.
-sort through qsortfilterproxymodel.
-each row guarenteed to correspond to 1 feature. 
-may have duplicate labels.
-
-
-
 '''
 
 
 
-
-class featuresWidget(searchableComboBox.searchableComboBox):
+class featureWidget(searchableComboBox.searchableComboBox):
 #
   #  featuresChanged = pyqtSignal()
     
@@ -52,16 +34,19 @@ class featuresWidget(searchableComboBox.searchableComboBox):
     #string,QgsVectorLayer
        
     def setField(self,field,layer):
-        self.layer = layer
-        self.field = field
-        self.clear()
         
         filt = layer.subsetString()
         layer.setSubsetString('')#remove filter.
         
-        if not layer is None:
-            self.addItems([str(v) for v in sorted(layer.uniqueValues(layer.fields().indexOf(field)))])
-    
+        self.layerModel = QStandardItemModel(layer.featureCount(),1,self)#row = fid
+        for f in layer.getFeatures():
+            self.layerModel.setData(self.layerModel.index(f.id(),0),f[field])
+   
+       # self.setModel(model)
+        m = QSortFilterProxyModel(self)
+        m.setSourceModel(self.layerModel)
+        m.sort(0)
+        self.setModel(m)
         layer.setSubsetString(filt)#add filter.
 
     
@@ -74,25 +59,7 @@ class featuresWidget(searchableComboBox.searchableComboBox):
     def last(self):
         if self.currentIndex()>0:
             self.setCurrentIndex(self.currentIndex()-1)
-
-
-    def currentFeatures(self):      
-        
-        if self.layer and self.field:
-        
-            ##filt = self.layer.subsetString()
-            #self.layer.setSubsetString('')
-
-        
-            e = '%s=%s '%(doubleQuote(self.field),singleQuote(self.currentValue()))
-            request = QgsFeatureRequest().setFilterExpression(e)
-                
-            r = [f for f in self.layer.getFeatures(request)]    
-           # self.layer.setSubsetString(filt)
-            return r
-            
-        return []
-
+       
 
     def fromLayer(self):
         vals = [str(f[self.field]) for f in self.layer.selectedFeatures()]
@@ -117,7 +84,9 @@ class featuresWidget(searchableComboBox.searchableComboBox):
         zoomToSelected(self.layer)
         
         
-
+    def currentFid(self):
+        i = self.model().index(self.currentIndex(),0)
+        return self.model().mapToSource(i).row()
 
 def singleQuote(s):
     return "'%s'"%(s)
@@ -136,39 +105,12 @@ def zoomToSelected(layer):
 
 def filterString(field,value):
     return '%s=%s '%(doubleQuote(field),singleQuote(value))
-
+    
     
 
-
-class featureWidget(featuresWidget):
-
-    def feature(self):
-        f = self.currentFeatures()
-        if len(f)==1:
-            return f[0]
-
-            
-    
-            
-if __name__=='__console__':
-    from PyQt5.QtWidgets import QWidget,QHBoxLayout,QPushButton
-
-    w = QWidget()
-    w.setLayout(QHBoxLayout())
-    
-    f = featuresWidget()
-    w.layout().addWidget(f)
-    
-    nextButton = QPushButton('next')
-    nextButton.clicked.connect(f.next)
-    
-    w.layout().addWidget(nextButton)
-    
-
-
+if __name__ =='__console__':
+    layer = QgsProject.instance().mapLayersByName('stats19')[0]
+    field = 'gid'
+    w = featureWidget()
+    w.setField(field,layer)
     w.show()
-
-    layer = QgsProject.instance().mapLayersByName('buffers')[0]
-    f.setLayer(layer)
-    f.setField('segment_no')
-    f.setField('seg_no_int')

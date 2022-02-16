@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets
 
 from qgis.gui import QgsMapLayerComboBox,QgsFieldComboBox
 
-
+from qgis.core import QgsMapLayerProxyModel
 from . widgets import filterableFieldBox
 
 
@@ -30,6 +30,8 @@ class layersDialog(QtWidgets.QDialog):
 
         self.layer3 = QgsMapLayerComboBox(self)
         self.layer3.setAllowEmptyLayer(True)
+        self.layer3.setFilters(QgsMapLayerProxyModel.PolygonLayer)
+        
         
         self.field3 = QgsFieldComboBox(self.layer3)
         self.field3.setToolTip('Field matching displayed ')
@@ -38,8 +40,8 @@ class layersDialog(QtWidgets.QDialog):
         self.layer3.layerChanged.connect(self.field3.setLayer)
         self.field3.setLayer(self.layer3.currentLayer())
         
-        self.label3 = QtWidgets.QLabel('Additional (layer 3)',self)
-        self.label3.setToolTip( 'The only effect of this is to highlight features on the map when feature is changed.')
+        self.label3 = QtWidgets.QLabel('Layer 3 (layer with buffers)',self)
+        self.label3.setToolTip('layer with buffers')
         
         self.layout().addLayout(toHLayout([self.label3,self.layer3,self.field3]))
         self.resize(800,250)
