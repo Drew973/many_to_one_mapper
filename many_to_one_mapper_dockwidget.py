@@ -113,15 +113,18 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
                     layer3.selectByExpression(e)
                     extent.combineExtentWith(layer3.boundingBoxOfSelected())
                       
-          
-                layer2.selectByIds(self.model.fids(self.currentKey()))
-                extent.combineExtentWith(layer2.boundingBoxOfSelected())                     
- 
-                layer1.selectByIds([self.featuresBox.currentFid()])
-                extent.combineExtentWith(layer1.boundingBoxOfSelected())
+                      
+                if not layer2 is None:
+                    layer2.selectByIds(self.model.fids(key))
+                    extent.combineExtentWith(layer2.boundingBoxOfSelected())                     
+     
+     
+                if not layer1 is None:
+                    layer1.selectByIds([self.featuresBox.currentFid()])
+                    extent.combineExtentWith(layer1.boundingBoxOfSelected())
+
 
                 #zoom to bounding box of all selected
-                      
                 extent.scale(1.1)#increase size by factor so selected features not on edge of screen
                 iface.mapCanvas().setExtent(extent)
                 iface.mapCanvas().refresh()
