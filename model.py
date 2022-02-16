@@ -174,7 +174,7 @@ class model:
 
         return m
         
-
+'''
 #creates key from feature and layer.
 #using feature directly as key does not work properly. feature != feature ?
 def key(feature,layer,layer2):
@@ -182,6 +182,16 @@ def key(feature,layer,layer2):
         #return tuple(feature.attributes()+[layer.id(),layer2.id()])
         return tuple([feature.id(),layer.id(),layer2.id()])
     #raise ValueError('key({feature},{layer1},{layer2})'.format(feature=feature,layer1=layer,layer2=layer2))
+'''
+
+
+#creates key from feature and layer.
+#using feature directly as key does not work properly. feature != feature ?
+def key(fid,layer,layer2):
+    if not (fid is None or layer is None or layer2 is None):
+        return (fid,layer.id(),layer2.id(),)
+    #raise ValueError('key({feature},{layer1},{layer2})'.format(feature=feature,layer1=layer,layer2=layer2))
+
 
 
 def keyContainsLayer1(key,layer1):

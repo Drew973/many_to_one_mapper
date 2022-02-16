@@ -77,34 +77,25 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
 
 #filters on layer can cause this to be None
     def currentKey(self):
-        return model.key(self.featuresBox.feature(),self.layer1(),self.layer2())
+        #return model.key(self.featuresBox.feature(),self.layer1(),self.layer2())
+        return model.key(self.featuresBox.currentFid(),self.layer1(),self.layer2())
 
 
 #index argument to avoid connected currentIndexChanged passing zoom
     def changeFeature(self,index = None,zoom=None):
         if zoom is None:
             zoom = self.zoomBox.isChecked()
-       
-
-       
+              
         layer1 = self.layer1()
         layer2 = self.layer2()
         layer3 = self.layer3()
         
-        
         key = self.currentKey()
-        
-        filt = layer1.subsetString()
-        if filt and key is None:
-            layer1.setSubsetString('')
-            
-        key = self.currentKey()
-        
+        print(self.featuresBox.currentFid())
         
         if not key is None:
             self.view.setModel(self.model.toStandardItemModel(key,self.field2()))
             if zoom:
-
 
                 extent = QgsRectangle()
 
@@ -126,7 +117,7 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
                 layer2.selectByIds(self.model.fids(self.currentKey()))
                 extent.combineExtentWith(layer2.boundingBoxOfSelected())                     
  
-                layer1.selectByExpression(layerFunctions.filterString(self.field1(),self.featuresBox.currentValue()))
+                layer1.selectByIds([self.featuresBox.currentFid()])
                 extent.combineExtentWith(layer1.boundingBoxOfSelected())
 
                 #zoom to bounding box of all selected
@@ -135,8 +126,8 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
                 iface.mapCanvas().setExtent(extent)
                 iface.mapCanvas().refresh()
 
-                if filt and layer1.id()!=layer3.id():
-                    layer1.setSubsetString(filt)
+             #   if filt and layer1.id()!=layer3.id():
+                #    layer1.setSubsetString(filt)
 
     #drops all rows for current feature
     def clear(self):
@@ -295,7 +286,7 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
             layer3.setSubsetString('')#remove filter.
             
             for feat in layer1.getFeatures():
-                k = model.key(feat,layer1,layer2)
+                k = model.key(feat.id(),layer1,layer2)
                 print(k)
                 geoms = [f.geometry() for f in layerFunctions.getFeatures(layer3,field3,feat[field1])]
                 print(geoms)

@@ -18,6 +18,8 @@ from PyQt5.QtCore import QSortFilterProxyModel
 '''
 '''
 
+from PyQt5.QtGui import QStandardItemModel
+
 
 
 class featureWidget(searchableComboBox.searchableComboBox):
@@ -48,6 +50,9 @@ class featureWidget(searchableComboBox.searchableComboBox):
         m.sort(0)
         self.setModel(m)
         layer.setSubsetString(filt)#add filter.
+        
+        
+        self.layer = layer
 
     
     def next(self):
@@ -87,6 +92,7 @@ class featureWidget(searchableComboBox.searchableComboBox):
     def currentFid(self):
         i = self.model().index(self.currentIndex(),0)
         return self.model().mapToSource(i).row()
+
 
 def singleQuote(s):
     return "'%s'"%(s)

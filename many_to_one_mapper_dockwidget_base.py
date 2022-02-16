@@ -76,4 +76,4 @@ class Ui_manyToOneMapperDockWidgetBase(object):
         self.filterBuffersBox.setToolTip(_translate("manyToOneMapperDockWidgetBase", "<html><head/><body><p>Filter buffers layer on change</p></body></html>"))
         self.filterBuffersBox.setText(_translate("manyToOneMapperDockWidgetBase", "Filter buffers"))
         self.view.setToolTip(_translate("manyToOneMapperDockWidgetBase", "<html><head/><body><p>id and join field for features of join layer mapped to current feature of layer.</p><p>Right click for options to add and remove.</p><p><br/></p></body></html>"))
-from .widgets.featuresWidget import featureWidget
+from .widgets.featureWidget import featureWidget

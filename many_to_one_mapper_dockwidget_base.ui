@@ -115,7 +115,7 @@
   <customwidget>
    <class>featureWidget</class>
    <extends>QComboBox</extends>
-   <header>.widgets.featuresWidget</header>
+   <header>.widgets.featureWidget</header>
   </customwidget>
  </customwidgets>
  <resources/>
