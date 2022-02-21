@@ -61,9 +61,6 @@ class featureWidget(searchableComboBox.searchableComboBox):
             self.setModel(m)
             layer.setSubsetString(filt)#add filter.
 
-
-            
-
     
     def next(self):
         #count starts from 1. index starts from 0
@@ -77,32 +74,30 @@ class featureWidget(searchableComboBox.searchableComboBox):
        
 
     def fromLayer(self):
-        vals = [str(f[self.field]) for f in self.layer.selectedFeatures()]
-        
-        vals = list(set(vals)) #unique values
-        
-        if len(vals)==0:
-            return False,'no features selected'
-        
-        if len(vals)>1:
-            return False,'>1 value in selected features'
-        
-        if len(vals)==1:
-            self.setCurrentIndex(self.findText(vals[0]))
+        ids = [f.id() for f in self.layer.selectedFeatures()]
+        if len(ids)>0:
+            self.setCurrentIndex(self.fidToRow(min(ids)))
             return True,'no error'
-        
-        
-        
-    def selectOnLayer(self):
-      #  self.layer.selectByIds([f.id() for f in self.currentFeatures()])
-        self.layer.selectByExpression(filterString(self.field,self.currentValue()))
-        zoomToSelected(self.layer)
-        
-        
-    def currentFid(self):
+        else:
+            return False,'No features selected'
+
+
+    #fid to row of combobox
+    def fidToRow(self,fid):
         if not self.layer is None:
-            i = self.model().index(self.currentIndex(),0)
-            return self.model().mapToSource(i).row()
+            i = self.layerModel.index(fid,0)
+            return self.model().mapFromSource(i).row()      
+
+            
+    #row of combobox to fid
+    def rowToFid(self,row):
+        if not self.layer is None:
+            i = self.model().index(row,0)
+            return self.model().mapToSource(i).row()           
+    
+    
+    def currentFid(self):
+        return self.rowToFid(self.currentIndex())
 
 
 def singleQuote(s):

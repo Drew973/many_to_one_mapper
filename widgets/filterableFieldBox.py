@@ -47,12 +47,34 @@ class layerBox(QgsFieldComboBox):
 
     
 #QgsFieldComboBox showing only unique fields
-class uniqueFieldBox(layerBox):
+class uniqueFieldBox(QgsFieldComboBox):
 
     def __init__(self,parent=None):
         super().__init__(parent)
-        self.setFilterFunction(uniqueField)
-
+        
+        
+    def setLayer(self,layer):        
+        super().setLayer(layer)#fieldChanged emmited here?
+        
+        fields = QgsFields()
+        
+        if not layer is None:
+            filt = layer.subsetString()
+            layer.setSubsetString('')#remove filter. 
+            
+            self.cl = layer
+            
+            
+            for field in self.fields():
+                if uniqueField(field,layer):
+                        fields.append(field)
+            
+            
+            layer.setSubsetString(filt)#replace filter.             
+        
+        self.setFields(fields)#'will override layer'
+        
+        
         
 def uniqueField(field,layer):
     i = layer.fields().indexFromName(field.name())    

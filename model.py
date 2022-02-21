@@ -86,7 +86,35 @@ class model:
 
         #self.dataChanged.emit()
 
+   
+    def addWithinGeomAll(self,layer1,layer2,layer3,field1,field3):
+    
+        if not any(x is None for x in [layer1,layer2,layer3,field1,field3]):    
+            print(layer1,layer2,layer3,field1,field3)
+                    
+            filt1 = layer1.subsetString()
+            layer1.setSubsetString('')#filtering layer is very slow for shapefile. minimize this.
+            
+            filt2 = layer2.subsetString()
+            layer2.setSubsetString('')       
         
+            filt3 = layer3.subsetString()
+            layer3.setSubsetString('')
+
+            
+            for feat in layer1.getFeatures():
+                k = key(feat.id(),layer1,layer2)
+                layer3filt = layerFunctions.filterString(layer3.fields(),field3,feat[field1])
+                geoms = [f.geometry() for f in layer3.getFeatures(layer3filt)]
+                layer2filt = layerFunctions.featuresWithinGeometriesExp(geoms)
+                self.addFeatures(k,[f for f in layer2.getFeatures(layer2filt)])
+
+            layer1.setSubsetString(filt1)
+            layer2.setSubsetString(filt2)
+            layer3.setSubsetString(filt3)
+
+    
+
 
     def removeFeatures(self,key,features):
         self.data[key] = [f for f in self.data[key] if not f in features]
@@ -153,7 +181,19 @@ class model:
             layer2.setSubsetString(filt2)
 
 
+    def atts(self,key,field):
+        if key in self.data:
+            return [f[field] for f in self.data[key]]
+        return []
+        
 
+    def features(key):
+        if key in self.data:
+            return self.data[key]
+        else:
+            return []
+        
+    
     def fids(self,key,rows=None):
         
         if key in self.data:
@@ -185,15 +225,6 @@ class model:
 
         return m
         
-'''
-#creates key from feature and layer.
-#using feature directly as key does not work properly. feature != feature ?
-def key(feature,layer,layer2):
-    if not (feature is None or layer is None or layer2 is None):
-        #return tuple(feature.attributes()+[layer.id(),layer2.id()])
-        return tuple([feature.id(),layer.id(),layer2.id()])
-    #raise ValueError('key({feature},{layer1},{layer2})'.format(feature=feature,layer1=layer,layer2=layer2))
-'''
 
 
 #creates key from feature and layer.
@@ -203,6 +234,10 @@ def key(fid,layer,layer2):
         return (fid,layer.id(),layer2.id(),)
     #raise ValueError('key({feature},{layer1},{layer2})'.format(feature=feature,layer1=layer,layer2=layer2))
 
+
+def featureFromKey(key):
+    layer = QgsProject.instance().mapLayer(key[1])
+    return layer.getFeature(key[0])
 
 
 def keyContainsLayer1(key,layer1):

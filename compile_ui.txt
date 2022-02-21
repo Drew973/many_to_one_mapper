@@ -5,3 +5,5 @@ pyuic5 many_to_one_mapper_dockwidget_base.ui
 
 
 pyuic5 many_to_one_mapper_dockwidget_base.ui -o many_to_one_mapper_dockwidget_base.py
+
+pyuic5 settingsDialog.ui -o settings_dialog_base.py

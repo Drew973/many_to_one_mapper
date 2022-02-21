@@ -2,7 +2,7 @@ import os
 
 import csv
 
-from PyQt5 import QtGui, QtWidgets, uic
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import pyqtSignal,Qt,QUrl
 
@@ -10,9 +10,10 @@ from . many_to_one_mapper_dockwidget_base import Ui_manyToOneMapperDockWidgetBas
 from qgis.utils import iface
 
 from qgis.core import QgsRectangle
-from . import layers_dialog
+from . import selection_dialog
 
-from . import model,layerFunctions
+from . import model,layerFunctions,settings_dialog
+
 
 
 class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWidgetBase):
@@ -24,20 +25,16 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
         super(ManyToOneMapperDockWidget, self).__init__(parent)
         self.setupUi(self)
         
-        self.layersDialog = layers_dialog.layersDialog(self)
+        self.layersDialog = settings_dialog.settingsDialog(self)
+        self.colorsDialog = selection_dialog.selectionDialog(self)
+        
         self.prefix='Many To One Mapper: '
         
         self.initTopMenu()
         self.initTableMenu()
 
-        #self.layerBox1.layerChanged.connect(self.fieldBox1.setLayer)
-       # self.fieldBox1.setLayer(self.layerBox1.currentLayer())
 
-       # self.layerBox2.layerChanged.connect(self.fieldBox2.setLayer)
-       # self.fieldBox2.setLayer(self.layerBox2.currentLayer())
-
-
-        self.featuresBox.setField(self.layersDialog.field1.currentField(),self.layer1())
+        self.featuresBox.setField(self.field1(),self.layer1())
         self.layersDialog.field1.fieldChanged.connect(lambda field:self.featuresBox.setField(field,self.layer1()))
         self.layersDialog.layer1.layerChanged.connect(lambda layer:self.featuresBox.setField(self.field1(),layer))#field changed not always emited by setLayer()
 
@@ -73,7 +70,9 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
 
     def field3(self):
         return self.layersDialog.field3.currentField()
+        
 
+    
 
 #filters on layer can cause this to be None
     def currentKey(self):
@@ -81,65 +80,84 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
         return model.key(self.featuresBox.currentFid(),self.layer1(),self.layer2())
 
 
-#index argument to avoid connected currentIndexChanged passing zoom
+    '''index argument to avoid connected currentIndexChanged passing zoom
+        filter layer to feature 
+       select feature if checkbox ticked and layer set and field set.      
+       currentValue of featureWidget can be null
+    '''
     def changeFeature(self,index = None,zoom=None):
+        
         if zoom is None:
             zoom = self.zoomBox.isChecked()
-              
+
+        extent = QgsRectangle()
+        
+        def handleLayer(layer,e,filt,select):
+                
+            if e and not layer is None:
+                if filt:
+                    layer.setSubsetString(e)
+
+                if select:
+                    layer.selectByExpression(e)
+
+                for f in layer.getFeatures(e):
+                    extent.combineExtentWith(f.geometry().boundingBox())
+
+
+        def filterExpression(layer,field):
+            v = self.featuresBox.currentValue()
+            if v:
+                return layerFunctions.filterString(layer.fields(),field,v)
+            else:
+                return '1=2'
+
         layer1 = self.layer1()
+        field1 = self.field1()
+        
+        if layer1 and field1:
+            e = filterExpression(layer1,field1)
+            handleLayer(layer1,e,self.layersDialog.filter1.isChecked(),self.layersDialog.select1.isChecked())
+        
+        
         layer2 = self.layer2()
+        field2 = self.field2()                
+        
+        
+        if field2:
+            self.view.setModel(self.model.toStandardItemModel(self.currentKey(),self.field2()))
+            if layer2:
+                vals = self.model.atts(self.currentKey(),field2)
+                if vals:
+                    e = layerFunctions.fieldInVals(layer2.fields(),field2,vals)
+                else:
+                    e = '1=2' #filter out everything
+                
+                handleLayer(layer2,e,self.layersDialog.filter2.isChecked(),self.layersDialog.select2.isChecked())
+            
+        
         layer3 = self.layer3()
+        field3 = self.field3()
         
-        key = self.currentKey()
-        print(self.featuresBox.currentFid())
+        if layer3 and field3:
+            e = filterExpression(layer3,field3)
+            handleLayer(layer3,e,self.layersDialog.filter3.isChecked(),self.layersDialog.select3.isChecked())
+
+
+        if zoom:
+            extent.scale(1.1)#increase size by factor so selected features not on edge of screen
+            iface.mapCanvas().setExtent(extent)
+            iface.mapCanvas().refresh()
         
-        if not key is None:
-            self.view.setModel(self.model.toStandardItemModel(key,self.field2()))
-            if zoom:
+#layer1.selectByIds([self.featuresBox.currentFid()])    
+#layer1.getGeometry(self.featuresBox.currentFid())
 
-                extent = QgsRectangle()
-
-                
-                #need to do any filtering before selecting
-                if not layer3 is None:
-                
-                    e = layerFunctions.filterString(self.field3(),self.featuresBox.currentValue())
-                    
-                    #filter to field = current Value
-                    if self.filterBuffersBox.isChecked():
-                        layer3.setSubsetString(e)
-                      
-                    #filter may already be set. need to select after filter
-                    layer3.selectByExpression(e)
-                    extent.combineExtentWith(layer3.boundingBoxOfSelected())
-                      
-                      
-                if not layer2 is None:
-                    layer2.selectByIds(self.model.fids(key))
-                    extent.combineExtentWith(layer2.boundingBoxOfSelected())                     
-     
-     
-                if not layer1 is None:
-                    layer1.selectByIds([self.featuresBox.currentFid()])
-                    extent.combineExtentWith(layer1.boundingBoxOfSelected())
-
-
-                #zoom to bounding box of all selected
-                extent.scale(1.1)#increase size by factor so selected features not on edge of screen
-                iface.mapCanvas().setExtent(extent)
-                iface.mapCanvas().refresh()
-
-             #   if filt and layer1.id()!=layer3.id():
-                #    layer1.setSubsetString(filt)
 
     #drops all rows for current feature
     def clear(self):
         self.model.clear(self.currentKey())
         self.changeFeature()
         
-        
-    def selectOnLayer(self):
-        self.layer2().selectByIds(self.model.fids(self.currentKey(),self.selectedRows()))
     
         
     def selectedRows(self):
@@ -151,7 +169,6 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
         for feat in self.featuresBox.currentFeatures():
             self.model.addFeatures(self.currentKey(),self.layer2().selectedFeatures())
 
-        print(self.currentKey())
         self.changeFeature(zoom=False)
 
 
@@ -173,7 +190,6 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
 
     def initTopMenu(self):
         self.menuBar = QtWidgets.QMenuBar()
-
         
         #file menu
         self.fileMenu = QtWidgets.QMenu("File")  
@@ -185,27 +201,34 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
 
 
         #tools menu
-        self.toolsMenu = QtWidgets.QMenu("Edit")  
+        self.editMenu = QtWidgets.QMenu("Edit")  
 
-        addSelectedAct = self.toolsMenu.addAction('Add selected features')
+        addSelectedAct = self.editMenu.addAction('Add selected features')
         addSelectedAct.triggered.connect(self.addSelectedFeatures)
 
-        self.addWithinGeomAllAct=self.toolsMenu.addAction('Add features within geometry to all')
+        self.addWithinGeomAllAct = self.editMenu.addAction('Add features within geometry to all...')
         self.addWithinGeomAllAct.triggered.connect(self.addWithinGeomAll)
 
-        addWithinGeomAct = self.toolsMenu.addAction('Add features within geometry')
+        addWithinGeomAct = self.editMenu.addAction('Add features within geometry')
+        addWithinGeomAct.setToolTip('Adds all features of layer 2 contained within layer 3 geometry')
         addWithinGeomAct.triggered.connect(self.addWithinGeom)
         
-        clearAct = self.toolsMenu.addAction('Clear')
+        clearAct = self.editMenu.addAction('Clear')
+        clearAct.setToolTip('Remove all rows for current feature')
         clearAct.triggered.connect(self.clear)
-
-        self.menuBar.addMenu(self.toolsMenu)
+           
+        self.editMenu.setToolTipsVisible(True)
+        self.menuBar.addMenu(self.editMenu)
 
 
         #layers menu
-        self.layersMenu = QtWidgets.QMenu("Layers")
-        setLayersAct = self.layersMenu.addAction('Set layers')
+        self.layersMenu = QtWidgets.QMenu("Settings")
+        setLayersAct = self.layersMenu.addAction('Layers...')
         setLayersAct.triggered.connect(self.layersDialog.show)
+        
+        setColorAct = self.layersMenu.addAction('Set selection color...')
+        setColorAct.triggered.connect(self.colorsDialog.show)
+
         self.menuBar.addMenu(self.layersMenu)
         
 
@@ -219,6 +242,9 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
         self.mainWidget.layout().setMenuBar(self.menuBar)
 
 
+    def selectOnLayer(self):
+        self.layer2().selectByIds(self.model.fids(self.currentKey(),self.selectedRows()))
+        
 
     def save(self):
         to = QtWidgets.QFileDialog.getSaveFileName(caption='save as',filter='*.csv;;*')[0]
@@ -265,38 +291,28 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
 #add all accidents within or intersecting geometry of section
 #feat is feature for section
     def addWithinGeom(self):
-        geoms = [f.geometry() for f in layerFunctions.getFeatures(self.layer3(),self.field3(),self.featuresBox.currentValue())]
-        self.model.addFeatures(self.currentKey(),layerFunctions.featuresWithinGeometries(geoms,self.layer2()))
-        self.changeFeature(zoom=True)
+        layer3 = self.layer3()
+        field3 = self.field3()
+        layer2 = self.layer2()
+        
+        if layer3 and field3 and layer2:
+        
+            e = layerFunctions.filterString(layer3.fields(),field3,self.featuresBox.currentValue())
+            #geoms = [f.geometry() for f in layerFunctions.getFeatures(self.layer3(),self.field3(),self.featuresBox.currentValue())]
+            geoms = [f.geometry() for f in layer3.getFeatures(e)]
+            self.model.addFeatures(self.currentKey(),layerFunctions.featuresWithinGeometries(geoms,layer2))
+            self.changeFeature(zoom=False)
 
 
 
 #addWithinGeom for all sections
     def addWithinGeomAll(self):
+    
         reply = QMessageBox.question(self,self.prefix, "Add within geometry for all features?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         
         if reply == QMessageBox.Yes:
-        
-            layer1 = self.layer1()
-            layer2 = self.layer2()
-            layer3 = self.layer3()
-            field1 = self.field1()
-            field3 = self.field3()
-            
-            
-            filt = layer3.subsetString()
-            
-            layer3.setSubsetString('')#remove filter.
-            
-            for feat in layer1.getFeatures():
-                k = model.key(feat.id(),layer1,layer2)
-                print(k)
-                geoms = [f.geometry() for f in layerFunctions.getFeatures(layer3,field3,feat[field1])]
-                print(geoms)
-                self.model.addFeatures(k,layerFunctions.featuresWithinGeometries(geoms,layer2))
-
-            self.changeFeature(zoom=True)
-            layer3.setSubsetString(filt)
+            self.model.addWithinGeomAll(self.layer1(),self.layer2(),self.layer3(),self.field1(),self.field3())
+            self.changeFeature(zoom=False)
 
         
 
