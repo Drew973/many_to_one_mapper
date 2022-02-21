@@ -227,7 +227,7 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
         setLayersAct.triggered.connect(self.layersDialog.show)
         
         setColorAct = self.layersMenu.addAction('Set selection color...')
-        setColorAct.triggered.connect(self.colorsDialog.show)
+        setColorAct.triggered.connect(self.colorsDialog.exec)
 
         self.menuBar.addMenu(self.layersMenu)
         
