@@ -165,10 +165,7 @@ class ManyToOneMapperDockWidget(QtWidgets.QDockWidget, Ui_manyToOneMapperDockWid
 
 
     def addSelectedFeatures(self):
-        
-        for feat in self.featuresBox.currentFeatures():
-            self.model.addFeatures(self.currentKey(),self.layer2().selectedFeatures())
-
+        self.model.addFeatures(self.currentKey(),self.layer2().selectedFeatures())
         self.changeFeature(zoom=False)
 
 
