@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html>
+<head>  
+ <link rel="stylesheet" type="text/css" href="styles.css"/>
+</head>  
+
+<title>many to one mapper help</title>
+
+
+
+<body>
+        <h3 id="home">Accident Mapper</h3>
+
+        <p>Tool for mapping mfeatures of layer to features of another layer.</p>
+		<p>Displays links (to features of "layer 2") for one feature of "layer 1" at a time. </p>
+		<p>Can save and load csv. </p>
+
+		<h4> Setting layers and fields</h4>
+			<p>Before using the following will need specifying Layers:set layers.</p>
+			<p>Layer 1 + field to display/add to csv</p>
+			<p>Layer 2 + field to display/add to csv</p>
+
+		<h4> Selecting a feature</h4>
+			<p>Features to edit links for can be selected through: </p>
+			<ul>
+			<li>The drop down and arrows.</li>
+			<li>Selecting a feature on the layer and clicking 'From Layer'</li>
+			</ul>
+
+
+		<h4> Adding features:</h4>
+			<p>Features can be added through:</p>
+			<ul>
+			<li>"Edit:add selected features":</li>
+			<li>Edit:"add features within geometry" adds any features of layer 2 contained within the geometry of layer 3.</li>
+			<li>"Edit:add features within geometry to all": does this for every feature of layer 1</li>
+			</ul>
+		
+		
+		<h4> Removing Features:</h4>
+			<p>Features can be removed through.</p>
+			<ul>
+			<li>Right clicking on table and "drop selected rows".</li>
+			<li>Edit:clear:</li>
+			</ul>
+
+
+		<h4>Saving csv:</h4>
+		<p>Save as csv through File:save as csv...</p>
+		
+
+		<p>The resulting csv will have a header and 1 row per feature of layer 1 (with features of layer 2 mapped to it). </p>
+		<p>It will have 3 columns:<p>
+
+		<ul>
+		<li>1st column: Field of layer 1. Same name as field.</li>
+		<li>2nd column: list of join field for mapped features of Layer 2. Same name as field.</li>
+		<li>3rd column: Number of features in 2nd column. Named "Count". </li>
+		</ul>
+
+
+
+	<h4>Loading csv:</h4>
+		<p>Load a csv through File-->load csv...</p>
+		<p>The csv will need to have a column with the same name as field 1 and a column with the same name as field 2.</p>
+
+</body>
+
+
+</html>
