@@ -10,7 +10,7 @@
 name=Many To One Mapper
 qgisMinimumVersion=3.0
 description=plugin to make csv mapping many features of layer to another layer
-version=3.15
+version=3.16
 author=Drew
 email=drew.bennett@ptsinternational.co.uk
 

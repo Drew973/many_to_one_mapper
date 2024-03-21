@@ -13,3 +13,6 @@ class settingsDialog(QDialog, Ui_Dialog):
         self.field2.setLayer(self.layer2.currentLayer())
         self.field3.setLayer(self.layer3.currentLayer())
 
+        self.layer1.layerChanged.connect(self.field1.setLayer)
+        self.layer2.layerChanged.connect(self.field2.setLayer)
+        self.layer3.layerChanged.connect(self.field3.setLayer)
